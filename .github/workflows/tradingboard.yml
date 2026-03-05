@@ -2,8 +2,8 @@ name: Trading Bot
 
 on:
   schedule:
-    - cron: '0 * * * *'   # Runs every hour
-  workflow_dispatch:      # Manual trigger enabled
+    - cron: '*/15 * * * *'   # Runs every 15 minutes
+  workflow_dispatch:        # Manual trigger enabled
 
 jobs:
   run-bot:
