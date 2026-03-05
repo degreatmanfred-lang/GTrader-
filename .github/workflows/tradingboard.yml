@@ -1,16 +1,19 @@
 name: Trading Bot
 
+concurrency:
+  group: trading-bot
+  cancel-in-progress: true
+
 on:
   schedule:
-    - cron: '*/15 * * * *'   # Runs every 15 minutes
-  workflow_dispatch:        # Manual trigger enabled
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
     steps:
-
       # 1️⃣ Checkout Repository
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -48,12 +51,9 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-
           TWELVEDATA_API_KEY_1: ${{ secrets.TWELVEDATA_API_KEY_1 }}
           TWELVEDATA_API_KEY_2: ${{ secrets.TWELVEDATA_API_KEY_2 }}
           TWELVEDATA_API_KEY_3: ${{ secrets.TWELVEDATA_API_KEY_3 }}
-
           FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-
         run: |
           python main.py
