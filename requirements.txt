@@ -1,0 +1,5 @@
+requests
+pandas
+numpy
+firebase-admin
+python-telegram-bot
