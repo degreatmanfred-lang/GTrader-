@@ -927,7 +927,7 @@ class TradingBot:
         else: self.sr_probability_gate = 0.2
 
 if __name__ == "__main__":
-restart_controller = RestartController(
+    restart_controller = RestartController(
         owner=Config.GITHUB_OWNER,
         repository=Config.GITHUB_REPOSITORY,
         token=Config.BOT_TRIGGER_TOKEN
