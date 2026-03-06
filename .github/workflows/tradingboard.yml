@@ -1,19 +1,16 @@
 name: Trading Bot
 
-concurrency:
-  group: trading-bot
-  cancel-in-progress: false
-
 on:
+  schedule:
+    - cron: '*/5 * * * *'
   workflow_dispatch:
-  repository_dispatch:
-    types: [run-bot]
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -53,15 +50,14 @@ jobs:
         run: |
           python main.py
 
-      - name: Wait before next run
-        run: sleep 120
-
-      - name: Trigger next run
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Self Trigger Next Run
+        if: always()
         run: |
+          echo "Waiting 2 minutes before triggering next run..."
+          sleep 120
+
           curl -X POST \
-          -H "Authorization: Bearer $GH_TOKEN" \
+          -H "Authorization: token ${{ secrets.BOT_TRIGGER_TOKEN }}" \
           -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/${{ github.repository }}/dispatches \
-          -d '{"event_type":"run-bot"}'
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/tradingbot.yml/dispatches \
+          -d '{"ref":"main"}'
