@@ -123,32 +123,31 @@ class RestartController:
             print(f"Error triggering GitHub workflow restart: {e}")
 
     def check_and_restart(self):
-        current_time = time.time()
-        elapsed_time = current_time - self.start_time
-        
-        # Check every 60 seconds
-        if (current_time - self.last_check_time) < 60:
-            return
-        self.last_check_time = current_time
+    current_time = time.time()
+    elapsed_time = current_time - self.start_time
 
-        # Trigger restart if runtime reaches approximately 5 hours (18000 seconds) and not already triggered
-        # Line 135
-if elapsed_time >= 18000 and not self.restart_triggered:
-    print(f"Runtime reached {elapsed_time:.2f} seconds (approx 5 hours). Triggering workflow restart...")
+    # Check every 60 seconds
+    if (current_time - self.last_check_time) < 60:
+        return
+    self.last_check_time = current_time
 
-    self._trigger_workflow_restart()
+    # Trigger restart if runtime reaches approximately 5 hours
+    if elapsed_time >= 18000 and not self.restart_triggered:
+        print(f"Runtime reached {elapsed_time:.2f} seconds (approx 5 hours). Triggering restart.")
 
-    self.restart_triggered = True
+        self._trigger_workflow_restart()
 
-    # Release lock so the next bot can start
-    if os.path.exists("bot.lock"):
-        os.remove("bot.lock")
-        print("Lock released for new bot instance.")
+        self.restart_triggered = True
 
-    print("Exiting current bot for clean Bot A → Bot B handover.")
+        # Release lock so the next bot can start
+        if os.path.exists("bot.lock"):
+            os.remove("bot.lock")
+            print("Lock released for new bot instance.")
 
-    import sys
-    sys.exit(0)
+        print("Exiting current bot for clean Bot A → Bot B handover.")
+
+        import sys
+        sys.exit(0)
 
 # ============================================================
 # CONFIGURATION & INFRASTRUCTURE
