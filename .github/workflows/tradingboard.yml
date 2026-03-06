@@ -1,9 +1,11 @@
 name: Trading Bot
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
   workflow_dispatch:
+
+concurrency:
+  group: trading-bot
+  cancel-in-progress: false
 
 jobs:
   run-bot:
@@ -14,32 +16,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check if weekday
-        id: weekday_check
-        run: |
-          DAY=$(date +%u)
-          if [ "$DAY" -ge 6 ]; then
-            echo "Weekend detected. Skipping bot run."
-            echo "run_bot=false" >> $GITHUB_OUTPUT
-          else
-            echo "Weekday detected. Running bot."
-            echo "run_bot=true" >> $GITHUB_OUTPUT
-          fi
-
       - name: Set up Python
-        if: steps.weekday_check.outputs.run_bot == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install dependencies
-        if: steps.weekday_check.outputs.run_bot == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run Trading Bot
-        if: steps.weekday_check.outputs.run_bot == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -47,17 +34,6 @@ jobs:
           TWELVEDATA_API_KEY_2: ${{ secrets.TWELVEDATA_API_KEY_2 }}
           TWELVEDATA_API_KEY_3: ${{ secrets.TWELVEDATA_API_KEY_3 }}
           FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+          BOT_TRIGGER_TOKEN: ${{ secrets.BOT_TRIGGER_TOKEN }}
         run: |
           python main.py
-
-      - name: Self Trigger Next Run
-        if: always()
-        run: |
-          echo "Waiting 2 minutes before triggering next run..."
-          sleep 120
-
-          curl -X POST \
-          -H "Authorization: token ${{ secrets.BOT_TRIGGER_TOKEN }}" \
-          -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/tradingbot.yml/dispatches \
-          -d '{"ref":"main"}'
