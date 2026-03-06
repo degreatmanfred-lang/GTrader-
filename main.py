@@ -946,8 +946,4 @@ restart_controller = RestartController(
 
         time.sleep(30)
 
-            
-    else:
-        # Program exits here if conditions are not met, before reaching the scanning stage.
-        pass
-'''
+
