@@ -132,9 +132,23 @@ class RestartController:
         self.last_check_time = current_time
 
         # Trigger restart if runtime reaches approximately 5 hours (18000 seconds) and not already triggered
-        if elapsed_time >= 18000 and not self.restart_triggered:
-            print(f"Runtime reached {elapsed_time:.2f} seconds (approx 5 hours). Triggering workflow restart...")
-            self._trigger_workflow_restart()
+        # Line 135
+if elapsed_time >= 18000 and not self.restart_triggered:
+    print(f"Runtime reached {elapsed_time:.2f} seconds (approx 5 hours). Triggering workflow restart...")
+
+    self._trigger_workflow_restart()
+
+    self.restart_triggered = True
+
+    # Release lock so the next bot can start
+    if os.path.exists("bot.lock"):
+        os.remove("bot.lock")
+        print("Lock released for new bot instance.")
+
+    print("Exiting current bot for clean Bot A → Bot B handover.")
+
+    import sys
+    sys.exit(0)
 
 # ============================================================
 # CONFIGURATION & INFRASTRUCTURE
