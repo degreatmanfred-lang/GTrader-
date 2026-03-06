@@ -927,20 +927,26 @@ class TradingBot:
         else: self.sr_probability_gate = 0.2
 
 if __name__ == "__main__":
-    if ExecutionController.check_and_lock():
-        restart_controller = None
-        try:
-            # Initialize the restart controller
-            restart_controller = RestartController(
-                owner=Config.GITHUB_OWNER,
-                repository=Config.GITHUB_REPOSITORY,
-                token=Config.BOT_TRIGGER_TOKEN
-            )
+restart_controller = RestartController(
+        owner=Config.GITHUB_OWNER,
+        repository=Config.GITHUB_REPOSITORY,
+        token=Config.BOT_TRIGGER_TOKEN
+    )
 
-            bot = TradingBot()
-            bot.run_scan(restart_controller=restart_controller)
-        finally:
-            ExecutionController.release_lock_and_update_state()
+    while True:
+
+        if ExecutionController.check_and_lock():
+
+            try:
+                bot = TradingBot()
+                bot.run_scan(restart_controller=restart_controller)
+
+            finally:
+                ExecutionController.release_lock_and_update_state()
+
+        time.sleep(30)
+
+            
     else:
         # Program exits here if conditions are not met, before reaching the scanning stage.
         pass
