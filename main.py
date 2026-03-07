@@ -508,10 +508,10 @@ class TA:
         return last["high"] > level_price and last["close"] < level_price
 
     @staticmethod
-    def detect_volume_spike(df: pd.DataFrame) -> bool:
-        if "volume" not in df.columns:
+def detect_volume_spike(df: pd.DataFrame) -> bool:
+    if "volume" not in df.columns:
         return False
-    return df["volume"].iloc[-1] > df["volume"].rolling(20).mean().iloc[-1] * 1.5
+      return df["volume"].iloc[-1] > df["volume"].rolling(20).mean().iloc[-1] * 1.5
 
     @staticmethod
     def detect_micro_bos(df: pd.DataFrame, direction: str) -> bool:
