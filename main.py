@@ -326,7 +326,7 @@ class RequestHandler:
                 return None
                 
             df = pd.DataFrame(data["values"])
-            cols_to_convert = ["open", "high", "low", "close", "volume"]
+            cols_to_convert = ["open", "high", "low", "close"]
             df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric)
             df["datetime"] = pd.to_datetime(df["datetime"])
             return df.set_index("datetime").sort_index()
@@ -509,7 +509,9 @@ class TA:
 
     @staticmethod
     def detect_volume_spike(df: pd.DataFrame) -> bool:
-        return df["volume"].iloc[-1] > df["volume"].rolling(20).mean().iloc[-1] * 1.5
+    if "volume" not in df.columns:
+        return False
+    return df["volume"].iloc[-1] > df["volume"].rolling(20).mean().iloc[-1] * 1.5
 
     @staticmethod
     def detect_micro_bos(df: pd.DataFrame, direction: str) -> bool:
