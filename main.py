@@ -509,7 +509,7 @@ class TA:
 
     @staticmethod
     def detect_volume_spike(df: pd.DataFrame) -> bool:
-    if "volume" not in df.columns:
+        if "volume" not in df.columns:
         return False
     return df["volume"].iloc[-1] > df["volume"].rolling(20).mean().iloc[-1] * 1.5
 
