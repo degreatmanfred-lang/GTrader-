@@ -173,7 +173,7 @@ class Config:
     MINUTE_CALL_LIMIT = 7 # STRICT HARD LIMIT (Buffer safety)
     DAILY_CALL_LIMIT = 800
     
-    CONFIDENCE_THRESHOLD = 75.0
+    CONFIDENCE_THRESHOLD = 68.0
     
     SYMBOLS = [
         "EUR/USD", "GBP/USD", "USD/JPY", "USD/CHF", "USD/CAD",
